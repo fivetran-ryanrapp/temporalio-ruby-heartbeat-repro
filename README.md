@@ -60,7 +60,8 @@ To use a server you already run (namespace `default`), set `TEMPORAL_ADDRESS`:
 TEMPORAL_ADDRESS=localhost:7233 bundle exec ruby repro.rb
 ```
 
-It takes about two minutes. `sample_output.txt` is one run.
+It takes about two minutes. Two captured runs show the same results: `sample_output.txt` (temporalio 1.11.0, Ruby 3.3.13,
+macOS arm64) and `reproduced_output.txt` (temporalio 1.6.0, Ruby 3.3.13, Linux ARM64).
 
 ## Files
 
