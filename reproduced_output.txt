@@ -1,0 +1,84 @@
+time=2026-11-19T21:37:30.719 level=WARN msg="Cluster Id in Cluster Metadata config is not a valid uuid. Generating a new Cluster Id" component=metadata-initializer
+Temporal server at 127.0.0.1:38275; temporalio 1.6.0; ruby 3.3.13
+activity heartbeat_timeout=6s, heartbeats every 2s, max_attempts=1
+Temporal CLI 1.10.1 (Server 1.32.2, UI 2.56.4)
+
+Temporal Server:      localhost:38275
+Temporal Persistence: in-memory
+Temporal Metrics:     http://localhost:45147/metrics
+
+=== A: sleeps 20s; no heartbeat through the SDK; a separate process heartbeats by id
+t+  0.0s  worker:  ACTIVITY_START id=1 attempt=1 heartbeat_timeout=6.0
+t+  0.2s  server:  state=STARTED attempt=1 no heartbeat yet (no details)
+t+  2.3s  server:  state=STARTED attempt=1 last heartbeat 2.0s ago (details recorded)
+t+  4.2s  server:  state=STARTED attempt=1 last heartbeat 1.9s ago (details recorded)
+t+  6.3s  server:  state=STARTED attempt=1 last heartbeat 2.0s ago (details recorded)
+t+  8.3s  server:  state=STARTED attempt=1 last heartbeat 2.0s ago (details recorded)
+t+ 10.2s  server:  state=STARTED attempt=1 last heartbeat 1.9s ago (details recorded)
+t+ 11.0s  worker:  WORK_INTERRUPTED Temporalio::Error::CanceledError: Activity canceled
+t+ 11.0s  worker:  ACTIVITY_END
+t+ 16.4s  workflow failed: Temporalio::Error::ActivityError: Activity task timed out <- Temporalio::Error::TimeoutError: activity Heartbeat timeout
+
+=== B: sleeps 20s; heartbeats through the SDK's activity context from a thread; nothing else
+t+  0.0s  worker:  ACTIVITY_START id=1 attempt=1 heartbeat_timeout=6.0
+t+  0.2s  server:  state=STARTED attempt=1 last heartbeat 0.2s ago (details recorded)
+t+  2.3s  server:  state=STARTED attempt=1 last heartbeat 2.3s ago (details recorded)
+t+  4.2s  server:  state=STARTED attempt=1 last heartbeat 4.2s ago (details recorded)
+t+  6.3s  server:  state=STARTED attempt=1 last heartbeat 1.5s ago (details recorded)
+t+  8.2s  server:  state=STARTED attempt=1 last heartbeat 3.4s ago (details recorded)
+t+ 10.3s  server:  state=STARTED attempt=1 last heartbeat 0.7s ago (details recorded)
+t+ 12.2s  server:  state=STARTED attempt=1 last heartbeat 2.6s ago (details recorded)
+t+ 14.3s  server:  state=STARTED attempt=1 last heartbeat 4.7s ago (details recorded)
+t+ 16.3s  server:  state=STARTED attempt=1 last heartbeat 1.8s ago (details recorded)
+t+ 18.3s  server:  state=STARTED attempt=1 last heartbeat 3.9s ago (details recorded)
+t+ 20.0s  worker:  WORK_DONE canceled_flag=false
+t+ 20.0s  worker:  ACTIVITY_END
+t+ 20.2s  workflow completed: "completed"
+
+=== C: holds the GVL for 20s; SDK heartbeat thread; a separate process heartbeats by id
+t+  0.0s  worker:  ACTIVITY_START id=1 attempt=1 heartbeat_timeout=6.0
+t+  0.2s  server:  state=STARTED attempt=1 no heartbeat yet (no details)
+t+  2.3s  server:  state=STARTED attempt=1 last heartbeat 2.0s ago (details recorded)
+t+  4.3s  server:  state=STARTED attempt=1 last heartbeat 2.0s ago (details recorded)
+t+  6.3s  server:  state=STARTED attempt=1 last heartbeat 2.0s ago (details recorded)
+t+  8.3s  server:  state=STARTED attempt=1 last heartbeat 2.0s ago (details recorded)
+t+ 10.3s  server:  state=STARTED attempt=1 last heartbeat 2.0s ago (details recorded)
+t+ 12.2s  server:  state=STARTED attempt=1 last heartbeat 1.9s ago (details recorded)
+t+ 14.3s  server:  state=STARTED attempt=1 last heartbeat 1.9s ago (details recorded)
+t+ 16.3s  server:  state=STARTED attempt=1 last heartbeat 2.0s ago (details recorded)
+t+ 18.2s  server:  state=STARTED attempt=1 last heartbeat 1.9s ago (details recorded)
+t+ 20.3s  server:  state=STARTED attempt=1 last heartbeat 1.9s ago (details recorded)
+t+ 20.6s  worker:  WORK_DONE canceled_flag=false
+t+ 20.6s  worker:  ACTIVITY_END
+t+ 26.6s  workflow failed: Temporalio::Error::ActivityError: Activity task timed out <- Temporalio::Error::TimeoutError: activity Heartbeat timeout
+
+=== D: like A, but registered with activity_cancel_raise false
+t+  0.0s  worker:  ACTIVITY_START id=1 attempt=1 heartbeat_timeout=6.0
+t+  0.2s  server:  state=STARTED attempt=1 no heartbeat yet (no details)
+t+  2.3s  server:  state=STARTED attempt=1 last heartbeat 2.0s ago (details recorded)
+t+  4.2s  server:  state=STARTED attempt=1 last heartbeat 1.9s ago (details recorded)
+t+  6.3s  server:  state=STARTED attempt=1 last heartbeat 2.0s ago (details recorded)
+t+  8.2s  server:  state=STARTED attempt=1 last heartbeat 1.9s ago (details recorded)
+t+ 10.3s  server:  state=STARTED attempt=1 last heartbeat 2.0s ago (details recorded)
+t+ 12.3s  server:  state=STARTED attempt=1 last heartbeat 1.9s ago (details recorded)
+t+ 14.3s  server:  state=STARTED attempt=1 last heartbeat 1.9s ago (details recorded)
+t+ 16.2s  server:  state=STARTED attempt=1 last heartbeat 1.9s ago (details recorded)
+t+ 18.3s  server:  state=STARTED attempt=1 last heartbeat 1.9s ago (details recorded)
+t+ 20.0s  worker:  WORK_DONE canceled_flag=true
+t+ 20.0s  worker:  ACTIVITY_END
+t+ 24.4s  workflow failed: Temporalio::Error::ActivityError: Activity task timed out <- Temporalio::Error::TimeoutError: activity Heartbeat timeout
+
+=== E: holds the GVL for 4s; SDK heartbeat thread; a separate process heartbeats by id
+t+  0.0s  worker:  ACTIVITY_START id=1 attempt=1 heartbeat_timeout=6.0
+t+  0.2s  server:  state=STARTED attempt=1 no heartbeat yet (no details)
+t+  2.3s  server:  state=STARTED attempt=1 last heartbeat 2.0s ago (details recorded)
+t+  4.0s  worker:  WORK_DONE canceled_flag=false
+t+  4.0s  worker:  ACTIVITY_END
+t+  4.2s  workflow completed: "completed"
+
+=== Summary
+A: activity ended at t+11.0s, workflow failed: Temporalio::Error::ActivityError: Activity task timed out <- Temporalio::Error::TimeoutError: activity Heartbeat timeout
+B: activity ended at t+20.0s, workflow completed: "completed"
+C: activity ended at t+20.6s, workflow failed: Temporalio::Error::ActivityError: Activity task timed out <- Temporalio::Error::TimeoutError: activity Heartbeat timeout
+D: activity ended at t+20.0s, workflow failed: Temporalio::Error::ActivityError: Activity task timed out <- Temporalio::Error::TimeoutError: activity Heartbeat timeout
+E: activity ended at t+4.0s, workflow completed: "completed"
