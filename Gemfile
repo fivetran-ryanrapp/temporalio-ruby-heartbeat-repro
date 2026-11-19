@@ -2,4 +2,4 @@
 
 source "https://rubygems.org"
 
-gem "temporalio", "1.6.0"
+gem "temporalio", "1.11.0"

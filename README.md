@@ -1,6 +1,7 @@
 # temporalio-ruby heartbeat repro
 
-A minimal reproduction for a question about `temporalio` (sdk-ruby) 1.6.0:
+A minimal reproduction for a question about `temporalio` (sdk-ruby). It reproduces identically on 1.11.0 (the latest
+stable release when this was written) and on 1.6.0:
 
 > If an activity's heartbeats come from outside the SDK's activity context (a separate process, using the by-ID
 > heartbeat API), the server records them, but the worker still cancels the activity locally and discards its result.
@@ -45,8 +46,8 @@ for any such native call and is not itself the subject of the question.
 
 ## Run it
 
-Requires Ruby 3.2 or newer (tested on 3.3.13, macOS arm64) and network access the first time, because the SDK's test
-environment downloads a dev server.
+Requires Ruby 3.3 or newer (the gem's requirement; tested on 3.3.13, macOS arm64) and network access the first time,
+because the SDK's test environment downloads a dev server. The `Gemfile` pins `temporalio` 1.11.0.
 
 ```sh
 bundle install
